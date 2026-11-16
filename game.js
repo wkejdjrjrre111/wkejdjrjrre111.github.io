@@ -156,7 +156,7 @@
   }
 
   function pickTitle() {
-    if (state.drank) return '喝了水，它懋得慌';
+    if (state.drank) return '喝了水，它憋得慌';
     if (state.lightsOff) {
       return state.doorOpen ? '灯关了，门外还站着一个 🙂' : '灯关了，它睡得很香';
     }
