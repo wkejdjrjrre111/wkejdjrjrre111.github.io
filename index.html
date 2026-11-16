@@ -1,1 +1,200 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>冷脸取暖记</title></head><body style="font-family:system-ui;display:grid;place-items:center;height:100vh;margin:0"><p>🥶 正在部署…</p></body></html>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>冷脸取暖记 · 盖被子小互动</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🙂</text></svg>">
+<link rel="stylesheet" href="game.css">
+<link rel="stylesheet" href="game2.css">
+</head>
+<body>
+
+  <div class="stage-wrap" id="stageWrap">
+  <div class="stage" id="stage">
+
+    <div class="room" id="roomLayer">
+    <div class="glow" aria-hidden="true"></div>
+    <div class="snow" id="snow" aria-hidden="true"></div>
+    <div class="frost" aria-hidden="true"></div>
+
+    <p class="title" id="title">好冷呀，快帮帮它</p>
+    <p class="status" id="status" aria-live="polite">需要 1 种取暖 · 已有 0 种</p>
+
+    <div class="window" id="window" role="button" tabindex="0" aria-label="点一下窗户，开关它">
+      <div class="win-out" aria-hidden="true">
+        <div class="moon"></div>
+        <i></i><i></i><i></i><i></i><i></i>
+      </div>
+      <div class="win-pane" aria-hidden="true">
+        <span class="mullion-v"></span>
+        <span class="mullion-h"></span>
+      </div>
+      <div class="win-frame" aria-hidden="true"></div>
+      <div class="draft" aria-hidden="true"><b></b><b></b><b></b></div>
+    </div>
+
+    <div class="wardrobe" id="wardrobe" role="button" tabindex="0" aria-label="点一下衣柜，打开或关上">
+      <div class="cabinet">
+        <div class="inside">
+          <div class="sweater" id="sweater" role="button" tabindex="0" aria-label="点一下衣服，换上它">
+            <span class="sl sl-l"></span>
+            <span class="sl sl-r"></span>
+          </div>
+          <span class="worn-tag">已穿上</span>
+        </div>
+        <div class="d-l"></div>
+        <div class="d-r"></div>
+      </div>
+    </div>
+
+    <div class="door" id="door" role="button" tabindex="0" aria-label="点一下门，开门看看门外">
+      <div class="door-out" aria-hidden="true"></div>
+      <div class="door-pane" aria-hidden="true">
+        <div class="panel"></div>
+        <div class="panel"></div>
+        <span class="knob"></span>
+      </div>
+      <div class="door-frame" aria-hidden="true"></div>
+    </div>
+
+    <div class="switch" id="switch" role="button" tabindex="0" aria-label="点一下开关，开灯或关灯">
+      <span class="rocker"></span>
+    </div>
+
+    <div class="pillow" aria-hidden="true"></div>
+    <div class="face" id="face"><span class="fx" id="faceFx">🥶</span></div>
+    <div class="scarf" aria-hidden="true"><i></i></div>
+
+    <div class="blanket" id="blanket" role="button" tabindex="0" aria-label="点一下被子，给对方盖上">
+      <div class="blanket-fold"></div>
+    </div>
+
+    <div class="nightstand" id="nightstand" role="button" tabindex="0" aria-label="点一下床头柜，看看抽屉里有什么">
+      <div class="body"></div>
+      <div class="drawer"></div>
+      <div class="handle"></div>
+      <div class="top"></div>
+      <div class="pill" id="pill" role="button" tabindex="0" aria-label="点一下药片，把它放进水里">💊</div>
+    </div>
+    <div class="water" id="water" role="button" tabindex="0" aria-label="点一下水杯，把这杯水喝掉">
+      <div class="glass"></div>
+      <div class="level"></div>
+      <div class="mark"></div>
+    </div>
+
+    <div class="phone" id="phone" role="button" tabindex="0" aria-label="点一下小米11，用骁龙888发热给它取暖">
+      <div class="screen">
+        <span class="brand">MI 11</span>
+        <span class="chip">骁龙 888</span>
+        <span class="bar"></span>
+      </div>
+      <div class="heat" aria-hidden="true"><i></i><i></i><i></i></div>
+    </div>
+
+    <div class="remote" id="remote" role="button" tabindex="0" aria-label="点一下遥控器，打开空调暖风">
+      <div class="display" id="display">—</div>
+      <div class="ac"><span>AC</span></div>
+      <div class="keys" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <div class="air" aria-hidden="true"><b></b><b></b><b></b></div>
+    </div>
+
+    <div class="visitor" aria-hidden="true">🙂</div>
+    <div class="door-glow" aria-hidden="true"></div>
+    <div class="darkness" aria-hidden="true"></div>
+
+    <button class="btn out-btn" id="outBtn" type="button">出去</button>
+
+    <p class="hint" id="hint">点被子 · 小米11 · 遥控器 · 换毛衣</p>
+
+    </div><!-- /room -->
+
+    <div class="scene scene-hall" id="hallScene" aria-hidden="true">
+      <div class="hall-floor" aria-hidden="true"></div>
+      <div class="hall-lamp" aria-hidden="true"></div>
+      <p class="scene-title">门外走廊</p>
+
+      <div class="big-door room-side" aria-hidden="true">
+        <div class="bd-pane"><span class="bd-tag">房间</span></div>
+        <div class="bd-frame"></div>
+      </div>
+
+      <div class="big-door bath-side" id="bathDoor" role="button" tabindex="0" aria-label="点一下厕所门">
+        <div class="bd-pane"><span class="bd-sign">🚻</span></div>
+        <div class="bd-frame"></div>
+      </div>
+
+      <div class="walker" id="walker">🙂</div>
+
+      <div class="scene-actions">
+        <button class="btn" id="toBath" type="button">进厕所</button>
+        <button class="btn ghost" id="toDining" type="button">去吃饭</button>
+        <button class="btn ghost" id="toRoom" type="button">回房间</button>
+      </div>
+    </div>
+
+    <div class="scene scene-bath" id="bathScene" aria-hidden="true">
+      <div class="bath-tiles" aria-hidden="true"></div>
+      <div class="bath-floor" aria-hidden="true"></div>
+      <p class="scene-title" id="bathTitle">厕所</p>
+      <div class="toilet" aria-hidden="true">🚽</div>
+      <div class="bather" id="bather">🙂</div>
+
+      <div class="scene-actions">
+        <button class="btn ghost" id="bathOut" type="button">出去</button>
+        <button class="btn ghost" id="undressBtn" type="button">脱掉毛衣</button>
+        <button class="btn warm" id="sitBtn" type="button">坐上马桶</button>
+        <button class="btn" id="washBtn" type="button">去洗澡</button>
+      </div>
+    </div>
+
+    <div class="scene scene-wash" id="washScene" aria-hidden="true">
+      <div class="wash-tiles" aria-hidden="true"></div>
+      <div class="wash-floor" aria-hidden="true"></div>
+      <p class="scene-title" id="washTitle">浴室 · 水还没开</p>
+      <div class="shower" aria-hidden="true">🚿</div>
+      <div class="spray" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="washer" id="washer">😐</div>
+      <div class="towel" id="towel" aria-hidden="true"></div>
+
+      <div class="wash-panel">
+        <div class="temp-row">
+          <label for="tempInput">水温</label>
+          <input id="tempInput" type="number" min="30" max="42" step="1" value="38" inputmode="numeric">
+          <span>°C</span>
+        </div>
+        <p class="temp-eval" id="tempEval">30–42 度之间调一调</p>
+        <div class="wash-btns">
+          <button class="btn" id="waterBtn" type="button">打开水</button>
+          <button class="btn ghost" id="dryBtn" type="button">擦身体</button>
+          <button class="btn ghost" id="washOut" type="button">回厕所</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="scene scene-dining" id="diningScene" aria-hidden="true">
+      <div class="dining-floor" aria-hidden="true"></div>
+      <p class="scene-title" id="diningTitle">吃饭的地方</p>
+      <div class="dining-table" aria-hidden="true"></div>
+      <div class="dining-leg l" aria-hidden="true"></div>
+      <div class="dining-leg r" aria-hidden="true"></div>
+      <div class="bowl" id="bowl" aria-hidden="true">🍜</div>
+      <div class="chair" aria-hidden="true">🪑</div>
+      <div class="diner" id="diner">🙂</div>
+
+      <div class="scene-actions">
+        <button class="btn ghost" id="diningBack" type="button">去走廊</button>
+        <button class="btn warm" id="sitDine" type="button">坐上去</button>
+        <button class="btn eat" id="eatBtn" type="button">吃</button>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" aria-hidden="true"></div>
+    <button class="reset-btn" id="resetBtn" type="button">重新开始</button>
+    <div class="hold-pill" id="holdPill" aria-hidden="true">还能憋 60 秒</div>
+  </div>
+  </div>
+
+<script src="game.js"></script>
+</body>
+</html>
