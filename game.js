@@ -54,6 +54,25 @@
   const outDoor = document.getElementById('outDoor');
   const car = document.getElementById('car');
   const outWalker = document.getElementById('outWalker');
+  const driveScene = document.getElementById('driveScene');
+  const driveTitle = document.getElementById('driveTitle');
+  const driveHint = document.getElementById('driveHint');
+  const driveHouse = document.getElementById('driveHouse');
+  const dashSpeed = document.getElementById('dashSpeed');
+  const keyHole = document.getElementById('keyHole');
+  const keyBarFill = document.getElementById('keyBarFill');
+  const storeScene = document.getElementById('storeScene');
+  const storeBagItems = document.getElementById('storeBagItems');
+  const viewCar = document.getElementById('viewCar');
+  const enterStoreBtn = document.getElementById('enterStoreBtn');
+  const exitDrive = document.getElementById('exitDrive');
+  const exitCarBtn = document.getElementById('exitCarBtn');
+  const buyBread = document.getElementById('buyBread');
+  const buyCookie = document.getElementById('buyCookie');
+  const leaveStore = document.getElementById('leaveStore');
+  const carAudio = document.getElementById('carAudio');
+  const audioBtn = document.getElementById('audioBtn');
+  const radioLabel = document.getElementById('radioLabel');
   const roomDoor = document.querySelector('.big-door.room-side');
   const tempInput = document.getElementById('tempInput');
   const tempEval = document.getElementById('tempEval');
@@ -77,7 +96,14 @@
     poisoned: false,
     diningSat: false,
     ate: false,
-    inCar: false
+    inCar: false,
+    engineOn: false,
+    atStore: false,
+    locked: false,
+    inStore: false,
+    radioOn: false,
+    boughtBread: false,
+    boughtCookie: false
   };
 
   /* ===== 舞台等比缩放（内部仍是 500×660 画布，外框按比例占位）===== */
@@ -96,7 +122,7 @@
   let currentView = 'room';
 
   function syncFocus() {
-    [hallScene, bathScene, washScene, diningScene, outsideScene].forEach(function (sc) {
+    [hallScene, bathScene, washScene, diningScene, outsideScene, driveScene, storeScene].forEach(function (sc) {
       const on = sc.classList.contains('active');
       sc.querySelectorAll('button, input').forEach(function (el) {
         el.setAttribute('tabindex', on ? '0' : '-1');
@@ -233,6 +259,15 @@
     nightstand.classList.toggle('taken', state.pillGone);
     diningScene.classList.toggle('sat', state.diningSat);
     diningScene.classList.toggle('ate', state.ate);
+    car.classList.toggle('locked', state.locked);
+    viewCar.style.display = state.inCar ? '' : 'none';
+    enterStoreBtn.style.display = (state.atStore && !state.inCar) ? '' : 'none';
+    buyBread.textContent = state.boughtBread ? '已购买' : '购买';
+    buyCookie.textContent = state.boughtCookie ? '已购买' : '购买';
+    var bag = [];
+    if (state.boughtBread) bag.push('🍞');
+    if (state.boughtCookie) bag.push('🍪');
+    storeBagItems.textContent = bag.length ? bag.join(' ') : '空空如也';
 
     syncFaces();
     setText(title, pickTitle());
@@ -353,16 +388,33 @@
     stage.classList.toggle('view-wash', name === 'wash');
     stage.classList.toggle('view-dining', name === 'dining');
     stage.classList.toggle('view-outside', name === 'outside');
+    stage.classList.toggle('view-drive', name === 'drive');
+    stage.classList.toggle('view-store', name === 'store');
     hallScene.classList.toggle('active', name === 'hall');
     bathScene.classList.toggle('active', name === 'bath');
     washScene.classList.toggle('active', name === 'wash');
     diningScene.classList.toggle('active', name === 'dining');
     outsideScene.classList.toggle('active', name === 'outside');
+    driveScene.classList.toggle('active', name === 'drive');
+    storeScene.classList.toggle('active', name === 'store');
     hallScene.setAttribute('aria-hidden', String(name !== 'hall'));
     bathScene.setAttribute('aria-hidden', String(name !== 'bath'));
     washScene.setAttribute('aria-hidden', String(name !== 'wash'));
     diningScene.setAttribute('aria-hidden', String(name !== 'dining'));
     outsideScene.setAttribute('aria-hidden', String(name !== 'outside'));
+    driveScene.setAttribute('aria-hidden', String(name !== 'drive'));
+    storeScene.setAttribute('aria-hidden', String(name !== 'store'));
+
+    if (name === 'drive') {
+      startDriveLoop();
+      syncDriveUI();
+    } else {
+      stopDriveLoop();
+      clearDriveKeys();
+      pauseRadio();
+    }
+    if (name === 'store') state.inStore = true;
+    else state.inStore = false;
 
     if (name !== 'bath' && sitting) {
       stopSit();
@@ -387,6 +439,141 @@
     syncBathButtons();
     syncFocus();
   }
+
+  /* ===== 车内驾驶：第一视角 ===== */
+  let driveTimer = null;
+  let speed = 0, distance = 0, heading = 0, holdProgress = 0;
+  const pressing = { mouse: false, q: false };
+  const keys = {};
+
+  function startDriveLoop() {
+    stopDriveLoop();
+    driveTimer = setInterval(driveTick, 200);
+  }
+  function stopDriveLoop() {
+    if (driveTimer) { clearInterval(driveTimer); driveTimer = null; }
+  }
+  function clearDriveKeys() {
+    keys.w = keys.a = keys.s = keys.d = false;
+    pressing.mouse = false;
+    pressing.q = false;
+    holdProgress = 0;
+    keyBarFill.style.width = '0';
+  }
+
+  function driveTick() {
+    if (state.engineOn) {
+      if (keys.w) speed = Math.min(60, speed + 6);
+      else if (keys.s) speed = Math.max(-15, speed - 6);
+      else speed = Math.max(0, speed - 2);
+      if (keys.a) heading = Math.max(-1, heading - .15);
+      else if (keys.d) heading = Math.min(1, heading + .15);
+      else heading *= .9;
+      distance += Math.abs(speed) * .05;
+    } else {
+      speed = Math.max(0, speed - 3);
+    }
+    if (distance >= 120) state.atStore = true;
+
+    // 长按 鼠标左键 + Q：启动 / 熄火（熄火需已到停车场）
+    const canToggle = state.engineOn ? state.atStore : true;
+    if (pressing.mouse && pressing.q && canToggle) {
+      holdProgress += .2;
+    } else {
+      holdProgress = Math.max(0, holdProgress - .15);
+    }
+    keyBarFill.style.width = Math.min(100, holdProgress * 100) + '%';
+    if (holdProgress >= 1) {
+      holdProgress = 0;
+      if (!state.engineOn) startEngine();
+      else stopEngine();
+    }
+    syncDriveUI();
+  }
+
+  function startEngine() {
+    state.engineOn = true;
+    speed = 0;
+    showToast('引擎启动了，按 W 出发');
+  }
+  function stopEngine() {
+    state.engineOn = false;
+    speed = 0;
+    showToast('引擎熄火了');
+  }
+
+  function syncDriveUI() {
+    dashSpeed.textContent = String(Math.round(Math.abs(speed)));
+    driveScene.classList.toggle('running', state.engineOn);
+    driveScene.classList.toggle('arrived', state.atStore);
+    driveScene.classList.toggle('moving', state.engineOn && Math.abs(speed) > 2);
+    driveHouse.style.transform = 'translateX(' + Math.round(heading * 18) + 'px)';
+    driveTitle.textContent = state.engineOn
+      ? (state.atStore ? '已到便利店停车场' : '行驶中 · ' + Math.round(distance) + ' m')
+      : '车内 · 未启动';
+    driveHint.textContent = state.engineOn
+      ? 'W 加速 · S 刹车 · A/D 转向 · 长按鼠标左键 + Q 熄火'
+      : '点击钥匙孔，长按鼠标左键 + Q 启动';
+    exitCarBtn.style.display = (!state.engineOn && state.atStore) ? '' : 'none';
+  }
+
+  keyHole.addEventListener('pointerdown', function (e) {
+    e.preventDefault();
+    pressing.mouse = true;
+  });
+  window.addEventListener('pointerup', function () { pressing.mouse = false; });
+  document.addEventListener('keydown', function (e) {
+    var k = e.key.toLowerCase();
+    if (currentView !== 'drive') return;
+    if (['w', 'a', 's', 'd', 'q'].indexOf(k) >= 0) e.preventDefault();
+    keys[k] = true;
+    if (k === 'q') pressing.q = true;
+  });
+  document.addEventListener('keyup', function (e) {
+    var k = e.key.toLowerCase();
+    keys[k] = false;
+    if (k === 'q') pressing.q = false;
+  });
+
+  /* ===== 车载音响 ===== */
+  function renderRadio() {
+    audioBtn.classList.toggle('playing', state.radioOn);
+    radioLabel.textContent = state.radioOn ? '🎶 黑街 · 播放中' : '📻 音响 · 未播放';
+  }
+
+  function pauseRadio() {
+    state.radioOn = false;
+    if (carAudio) carAudio.pause();
+    renderRadio();
+  }
+
+  function playRadio() {
+    if (!carAudio) return;
+    carAudio.volume = .6;
+    var p = carAudio.play();
+    if (p && typeof p.then === 'function') {
+      p.then(function () {
+        state.radioOn = true;
+        renderRadio();
+      }).catch(function () {
+        state.radioOn = false;
+        renderRadio();
+        showToast('未找到音频文件：assets/heijie.ogg');
+      });
+    } else {
+      state.radioOn = true;
+      renderRadio();
+    }
+  }
+
+  bindAction(audioBtn, function () {
+    if (state.radioOn) pauseRadio();
+    else playRadio();
+  });
+
+  carAudio.addEventListener('error', function () {
+    if (state.radioOn) pauseRadio();
+  });
 
   // 房间里的「出去」：前提是穿上衣服，走向门口再切场景
   let exitTimer = null;
@@ -495,6 +682,7 @@
       car.classList.add('sealed');
       state.inCar = true;
       outsideTitle.textContent = '坐进车里了';
+      render();
       showToast('车门关上了');
     }, 1600);
   });
@@ -515,13 +703,56 @@
       exitTimer = setTimeout(function () {
         outWalker.style.opacity = '';
         outWalker.classList.remove('walk-to-car');
-        car.classList.remove('door-open', 'sealed', 'unlocked');
+        car.classList.remove('door-open', 'sealed', 'unlocked', 'locked');
         state.inCar = false;
+        state.engineOn = false;
+        state.locked = false;
         goHome();
       }, 800);
     } else {
       goHome();
     }
+  });
+
+  // 第一视角：从 2D 车外进入车内视角
+  bindAction(viewCar, function () {
+    if (!state.inCar) { showToast('先坐进车里'); return; }
+    setScene('drive');
+  });
+
+  // 退出视角：回到 2D 车外（车辆状态保持不变）
+  bindAction(exitDrive, function () { setScene('outside'); });
+
+  // 叫出车内：锁车动画 → 回到 2D 车外
+  bindAction(exitCarBtn, function () {
+    if (state.engineOn || !state.atStore) return;
+    car.classList.remove('unlocked', 'door-open');
+    car.classList.add('locked');
+    state.locked = true;
+    outWalker.style.opacity = '';
+    outWalker.classList.remove('walk-to-car');
+    state.inCar = false;
+    outsideTitle.textContent = '便利店停车场';
+    render();
+    showToast('已锁车，回到车外');
+    exitTimer = setTimeout(function () { setScene('outside'); }, 700);
+  });
+
+  // 进入便利店 / 离开便利店
+  bindAction(enterStoreBtn, function () { setScene('store'); });
+  bindAction(leaveStore, function () { setScene('outside'); });
+
+  bindAction(buyBread, function () {
+    if (state.boughtBread) { showToast('奶油面包已经买过了'); return; }
+    state.boughtBread = true;
+    render();
+    showToast('买到奶油面包 🍞');
+  });
+  bindAction(buyCookie, function () {
+    if (state.boughtCookie) { showToast('压缩饼干已经买过了'); return; }
+    state.boughtCookie = true;
+    render();
+    showToast('买到压缩饼干 🍪');
   });
 
   // 走廊：进厕所（先开厕所门，再走进去）
@@ -814,9 +1045,17 @@
     diningTitle.textContent = '吃饭的地方';
     sitDine.textContent = '坐上去';
     diner.classList.remove('goto-outside');
-    car.classList.remove('unlocked', 'door-open', 'sealed');
+    car.classList.remove('unlocked', 'door-open', 'sealed', 'locked');
     outWalker.style.opacity = '';
     outsideTitle.textContent = '屋外门口';
+    stopDriveLoop();
+    clearDriveKeys();
+    pauseRadio();
+    speed = 0; distance = 0; heading = 0; holdProgress = 0;
+    driveScene.classList.remove('running', 'arrived', 'moving');
+    storeBagItems.textContent = '';
+    buyBread.textContent = '购买';
+    buyCookie.textContent = '购买';
     syncBathButtons();
     setScene('room');
     render();
