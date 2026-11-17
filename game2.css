@@ -1,77 +1,3 @@
-  /* ===== 小米 11 ===== */
-  .phone {
-    position: absolute;
-    left: 30px;
-    top: 216px;
-    width: 72px;
-    height: 120px;
-    z-index: 5;
-    border-radius: 16px;
-    border: 2px solid #3a4356;
-    background: linear-gradient(155deg, #2c3548, #141a26);
-    box-shadow: 0 10px 18px rgba(15, 25, 45, .28);
-    transform: rotate(-7deg);
-    cursor: pointer;
-    transition: transform .35s ease, box-shadow .5s ease, border-color .5s ease;
-  }
-  .phone:hover { transform: rotate(-7deg) translateY(-3px); }
-  .stage.phone-on .phone {
-    border-color: #ff7a3d;
-    box-shadow: 0 0 0 3px rgba(255, 122, 61, .25), 0 12px 26px rgba(255, 96, 20, .45);
-  }
-
-  .screen {
-    position: absolute;
-    inset: 5px;
-    border-radius: 12px;
-    background: linear-gradient(160deg, #1c2739, #0d131e);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    color: #c9dcff;
-    transition: background .6s ease, color .6s ease;
-  }
-  .stage.phone-on .screen {
-    background: linear-gradient(160deg, #5c1d0c, #2a0b04);
-    color: #ffd8a8;
-  }
-  .screen .brand { font-size: 11px; font-weight: 700; letter-spacing: .1em; }
-  .screen .chip { font-size: 9px; letter-spacing: .02em; color: #ff9a6b; }
-  .stage.phone-on .screen .chip { color: #ff7845; font-weight: 700; }
-  .screen .bar { width: 34px; height: 3px; border-radius: 2px; background: rgba(201, 220, 255, .35); }
-  .stage.phone-on .screen .bar { background: linear-gradient(90deg, #ff9d4d, #ff5a1a); }
-
-  .phone .heat {
-    position: absolute;
-    top: -30px;
-    left: 0;
-    right: 0;
-    height: 30px;
-    display: flex;
-    justify-content: center;
-    gap: 7px;
-    opacity: 0;
-    transition: opacity .5s ease;
-    pointer-events: none;
-  }
-  .phone .heat i {
-    width: 6px;
-    height: 18px;
-    border-radius: 50% 50% 40% 40%;
-    background: linear-gradient(180deg, rgba(255, 170, 80, 0), rgba(255, 116, 36, .95));
-    animation: rise 1.8s ease-in infinite;
-  }
-  .phone .heat i:nth-child(2) { animation-delay: .45s; height: 24px; }
-  .phone .heat i:nth-child(3) { animation-delay: .9s; }
-  .stage.phone-on .phone .heat { opacity: 1; }
-  @keyframes rise {
-    0%   { transform: translateY(6px) scaleY(.7); opacity: 0; }
-    25%  { opacity: 1; }
-    100% { transform: translateY(-20px) scaleY(1.3); opacity: 0; }
-  }
-
   /* ===== 遥控器 ===== */
   .remote {
     position: absolute;
@@ -265,7 +191,9 @@
   .stage.view-bath .room,
   .stage.view-wash .room,
   .stage.view-dining .room,
-  .stage.view-outside .room { opacity: 0; filter: blur(8px); pointer-events: none; }
+  .stage.view-outside .room,
+  .stage.view-drive .room,
+  .stage.view-store .room { opacity: 0; filter: blur(8px); pointer-events: none; }
 
   .scene {
     position: absolute;
@@ -821,3 +749,200 @@
     100% { transform: translate(150px, 0); opacity: 0; }
   }
   .diner.goto-outside { animation: walkOut .85s ease-in forwards; }
+
+  /* ===== 车内第一视角（伪 3D） ===== */
+  .scene-drive {
+    background: linear-gradient(180deg, #1b2340 0%, #33406e 52%, #5d6f9e 100%);
+    perspective: 600px;
+  }
+  .drive-road {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 300px;
+    height: 300px;
+    margin-left: -150px;
+    clip-path: polygon(46% 0, 54% 0, 100% 100%, 0 100%);
+    background: linear-gradient(180deg, #3a3f52, #23262f);
+    z-index: 21;
+  }
+  .drive-dash-line {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 10px;
+    height: 300px;
+    margin-left: -5px;
+    z-index: 22;
+    background: repeating-linear-gradient(180deg, rgba(255, 255, 255, .7) 0 26px, transparent 26px 52px);
+  }
+  .scene-drive.moving .drive-dash-line { animation: roadMove .5s linear infinite; }
+  @keyframes roadMove {
+    from { background-position-y: 0; }
+    to   { background-position-y: 52px; }
+  }
+  .drive-house {
+    position: absolute;
+    left: 34px;
+    top: 238px;
+    font-size: 52px;
+    z-index: 22;
+    transition: transform .4s ease;
+  }
+  .drive-store {
+    position: absolute;
+    right: 26px;
+    top: 214px;
+    font-size: 60px;
+    z-index: 22;
+    opacity: 0;
+    transform: scale(.6);
+    transition: opacity .6s ease, transform .6s ease;
+  }
+  .scene-drive.arrived .drive-store { opacity: 1; transform: scale(1); }
+  .drive-cabin {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 190px;
+    z-index: 24;
+    background: linear-gradient(180deg, #3a3340, #211d26);
+    border-radius: 34px 34px 0 0;
+  }
+  .drive-wheel {
+    position: absolute;
+    left: 50%;
+    margin-left: -44px;
+    bottom: 52px;
+    font-size: 72px;
+  }
+  .dash-panel {
+    position: absolute;
+    left: 24px;
+    bottom: 64px;
+    width: 150px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    background: #151823;
+    border-radius: 14px;
+    padding: 10px 12px;
+    color: #ffe7b0;
+  }
+  .dash-speed { font-size: 20px; font-weight: 800; min-width: 34px; text-align: right; }
+  .dash-unit { font-size: 10px; letter-spacing: .05em; }
+  .key-hole {
+    position: absolute;
+    right: 24px;
+    bottom: 64px;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #2a2f3e;
+    border: 2px dashed #8fa3c8;
+    display: grid;
+    place-items: center;
+    font-size: 30px;
+    cursor: pointer;
+    transition: box-shadow .4s ease, border-color .4s ease;
+  }
+  .key-hole:hover { filter: brightness(1.12); }
+  .key-bar {
+    position: absolute;
+    right: 24px;
+    bottom: 48px;
+    width: 64px;
+    height: 6px;
+    border-radius: 3px;
+    background: #151823;
+    overflow: hidden;
+  }
+  .key-bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #ffd84d, #ff9a3d); }
+  .scene-drive.running .key-hole { border-color: #ffd84d; box-shadow: 0 0 14px rgba(255, 216, 77, .5); }
+
+  .radio-btn {
+    position: absolute;
+    right: 24px;
+    bottom: 138px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #2a2f3e;
+    border: 2px dashed #8fa3c8;
+    display: grid;
+    place-items: center;
+    font-size: 26px;
+    cursor: pointer;
+    transition: box-shadow .4s ease, border-color .4s ease, filter .2s ease;
+  }
+  .radio-btn:hover { filter: brightness(1.12); }
+  .radio-btn.playing { border-color: #7ee08a; box-shadow: 0 0 12px rgba(126, 224, 138, .5); }
+  .radio-label {
+    position: absolute;
+    right: 20px;
+    bottom: 118px;
+    width: 130px;
+    text-align: right;
+    font-size: 10px;
+    letter-spacing: .03em;
+    color: #dbe6f7;
+    z-index: 25;
+  }
+  .drive-hint {
+    position: absolute;
+    top: 70px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 12px;
+    color: #dbe6f7;
+    z-index: 25;
+    padding: 0 30px;
+  }
+
+  /* 锁车动画 */
+  .car.locked .car-lights i { animation: carLockBlink .4s ease-in-out 2; opacity: 1; }
+  @keyframes carLockBlink {
+    50% { background: #7ee08a; box-shadow: 0 0 12px #7ee08a; }
+  }
+  .car-lock {
+    position: absolute;
+    top: -18px;
+    right: -6px;
+    font-size: 26px;
+    opacity: 0;
+    transition: opacity .4s ease;
+  }
+  .car.locked .car-lock { opacity: 1; }
+
+  /* ===== 便利店 ===== */
+  .scene-store { background: linear-gradient(180deg, #fff3e2 0%, #ffe3c4 60%, #f6cf9f 100%); }
+  .store-shelf {
+    position: absolute;
+    left: 30px;
+    right: 30px;
+    top: 150px;
+    height: 150px;
+    background: rgba(150, 100, 50, .14);
+    border-radius: 16px;
+    box-shadow: inset 0 0 0 2px rgba(150, 100, 50, .18);
+    z-index: 21;
+  }
+  .store-item { position: absolute; top: 22px; width: 150px; text-align: center; }
+  .store-item.b1 { left: 24px; }
+  .store-item.b2 { right: 24px; }
+  .store-item .si-emoji { font-size: 48px; }
+  .store-item .si-name { font-size: 13px; font-weight: 700; color: #7a4a1c; margin: 6px 0 10px; }
+  .store-bag {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 330px;
+    text-align: center;
+    font-size: 20px;
+    letter-spacing: 8px;
+    color: #7a4a1c;
+    z-index: 21;
+  }
+  .store-bag-label { font-size: 12px; color: #9a6a34; letter-spacing: 0; }
