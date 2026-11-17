@@ -215,15 +215,64 @@
         <div class="car-emoji" aria-hidden="true">🚗</div>
         <div class="car-lights" aria-hidden="true"><i></i><i></i></div>
         <div class="car-door" aria-hidden="true"></div>
+        <div class="car-lock" aria-hidden="true">🔒</div>
       </div>
       <div class="walker" id="outWalker">🙂</div>
       <div class="scene-actions">
         <button class="btn ghost" id="backHome" type="button">回去</button>
         <button class="btn warm" id="enterCarBtn" type="button">进车里</button>
+        <button class="btn warm" id="viewCar" type="button" style="display:none">第一视角</button>
+        <button class="btn ghost" id="enterStoreBtn" type="button" style="display:none">进入便利店</button>
+      </div>
+    </div>
+
+    <!-- ===== 场景：车内第一视角 ===== -->
+    <div class="scene scene-drive" id="driveScene" aria-hidden="true">
+      <p class="scene-title" id="driveTitle">车内 · 未启动</p>
+      <p class="drive-hint" id="driveHint">点击钥匙孔，长按鼠标左键 + Q 启动</p>
+      <div class="drive-road" aria-hidden="true"></div>
+      <div class="drive-dash-line" aria-hidden="true"></div>
+      <div class="drive-house" id="driveHouse" aria-hidden="true">🏠</div>
+      <div class="drive-store" aria-hidden="true">🏪</div>
+      <div class="drive-cabin" aria-hidden="true">
+        <div class="drive-wheel" aria-hidden="true">🛞</div>
+        <div class="dash-panel">
+          <span class="dash-speed" id="dashSpeed">0</span><span class="dash-unit">km/h</span>
+        </div>
+        <p class="radio-label" id="radioLabel">音响 · 未播放</p>
+        <button class="radio-btn" id="audioBtn" type="button" aria-label="车载音响">📻</button>
+        <div class="key-hole" id="keyHole" role="button" tabindex="0" aria-label="钥匙孔">🔑</div>
+        <div class="key-bar" aria-hidden="true"><i id="keyBarFill"></i></div>
+      </div>
+      <div class="scene-actions">
+        <button class="btn ghost" id="exitDrive" type="button">退出视角</button>
+        <button class="btn warm" id="exitCarBtn" type="button" style="display:none">叫出车内</button>
+      </div>
+    </div>
+
+    <!-- ===== 场景：便利店 ===== -->
+    <div class="scene scene-store" id="storeScene" aria-hidden="true">
+      <p class="scene-title" id="storeTitle">便利店</p>
+      <div class="store-shelf">
+        <div class="store-item b1">
+          <div class="si-emoji">🍞</div>
+          <div class="si-name">奶油面包</div>
+          <button class="btn warm" id="buyBread" type="button">购买</button>
+        </div>
+        <div class="store-item b2">
+          <div class="si-emoji">🍪</div>
+          <div class="si-name">压缩饼干</div>
+          <button class="btn warm" id="buyCookie" type="button">购买</button>
+        </div>
+      </div>
+      <div class="store-bag"><span class="store-bag-label">已购：</span><span id="storeBagItems"></span></div>
+      <div class="scene-actions">
+        <button class="btn ghost" id="leaveStore" type="button">离开便利店</button>
       </div>
     </div>
 
     <div class="toast" id="toast" aria-hidden="true"></div>
+    <audio id="carAudio" src="assets/heijie.ogg" preload="none" loop></audio>
     <button class="reset-btn" id="resetBtn" type="button">重新开始</button>
     <div class="hold-pill" id="holdPill" aria-hidden="true">还能憋 60 秒</div>
   </div>
