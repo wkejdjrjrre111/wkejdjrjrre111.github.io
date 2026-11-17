@@ -6,7 +6,7 @@
 <title>冷脸取暖记 · 盖被子小互动</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🙂</text></svg>">
 <link rel="stylesheet" href="game.css">
-<link rel="stylesheet" href="game2.css">
+  <link rel="stylesheet" href="game2.css">
 </head>
 <body>
 
@@ -21,6 +21,7 @@
     <p class="title" id="title">好冷呀，快帮帮它</p>
     <p class="status" id="status" aria-live="polite">需要 1 种取暖 · 已有 0 种</p>
 
+    <!-- 窗户：外面有月亮 -->
     <div class="window" id="window" role="button" tabindex="0" aria-label="点一下窗户，开关它">
       <div class="win-out" aria-hidden="true">
         <div class="moon"></div>
@@ -34,6 +35,7 @@
       <div class="draft" aria-hidden="true"><b></b><b></b><b></b></div>
     </div>
 
+    <!-- 衣柜 -->
     <div class="wardrobe" id="wardrobe" role="button" tabindex="0" aria-label="点一下衣柜，打开或关上">
       <div class="cabinet">
         <div class="inside">
@@ -48,6 +50,7 @@
       </div>
     </div>
 
+    <!-- 门 -->
     <div class="door" id="door" role="button" tabindex="0" aria-label="点一下门，开门看看门外">
       <div class="door-out" aria-hidden="true"></div>
       <div class="door-pane" aria-hidden="true">
@@ -70,6 +73,7 @@
       <div class="blanket-fold"></div>
     </div>
 
+    <!-- 床头柜与水 -->
     <div class="nightstand" id="nightstand" role="button" tabindex="0" aria-label="点一下床头柜，看看抽屉里有什么">
       <div class="body"></div>
       <div class="drawer"></div>
@@ -109,6 +113,7 @@
 
     </div><!-- /room -->
 
+    <!-- ===== 场景：门外走廊 ===== -->
     <div class="scene scene-hall" id="hallScene" aria-hidden="true">
       <div class="hall-floor" aria-hidden="true"></div>
       <div class="hall-lamp" aria-hidden="true"></div>
@@ -133,6 +138,7 @@
       </div>
     </div>
 
+    <!-- ===== 场景：厕所 ===== -->
     <div class="scene scene-bath" id="bathScene" aria-hidden="true">
       <div class="bath-tiles" aria-hidden="true"></div>
       <div class="bath-floor" aria-hidden="true"></div>
@@ -148,6 +154,7 @@
       </div>
     </div>
 
+    <!-- ===== 场景：浴室 ===== -->
     <div class="scene scene-wash" id="washScene" aria-hidden="true">
       <div class="wash-tiles" aria-hidden="true"></div>
       <div class="wash-floor" aria-hidden="true"></div>
@@ -172,6 +179,7 @@
       </div>
     </div>
 
+    <!-- ===== 场景：餐厅 ===== -->
     <div class="scene scene-dining" id="diningScene" aria-hidden="true">
       <div class="dining-floor" aria-hidden="true"></div>
       <p class="scene-title" id="diningTitle">吃饭的地方</p>
@@ -186,6 +194,32 @@
         <button class="btn ghost" id="diningBack" type="button">去走廊</button>
         <button class="btn warm" id="sitDine" type="button">坐上去</button>
         <button class="btn eat" id="eatBtn" type="button">吃</button>
+        <button class="btn ghost" id="toFrontDoor" type="button">去门口</button>
+      </div>
+    </div>
+
+    <!-- ===== 场景：屋外门口 ===== -->
+    <div class="scene scene-outside" id="outsideScene" aria-hidden="true">
+      <div class="out-floor" aria-hidden="true"></div>
+      <p class="scene-title" id="outsideTitle">屋外门口</p>
+      <div class="out-window" aria-hidden="true">
+        <div class="ow-glow"></div>
+        <div class="ow-moon"></div>
+        <i class="ow-v"></i><i class="ow-h"></i>
+      </div>
+      <div class="out-door" id="outDoor" aria-hidden="true">
+        <div class="od-pane"><span class="od-tag">房间</span></div>
+        <div class="od-frame"></div>
+      </div>
+      <div class="car" id="car">
+        <div class="car-emoji" aria-hidden="true">🚗</div>
+        <div class="car-lights" aria-hidden="true"><i></i><i></i></div>
+        <div class="car-door" aria-hidden="true"></div>
+      </div>
+      <div class="walker" id="outWalker">🙂</div>
+      <div class="scene-actions">
+        <button class="btn ghost" id="backHome" type="button">回去</button>
+        <button class="btn warm" id="enterCarBtn" type="button">进车里</button>
       </div>
     </div>
 
