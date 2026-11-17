@@ -1,78 +1,3 @@
-  /* 抽屉里的药片 */
-  .pill {
-    position: absolute;
-    left: 50%;
-    top: 26px;
-    margin-left: -12px;
-    width: 24px;
-    height: 24px;
-    font-size: 24px;
-    line-height: 1;
-    z-index: 6;
-    opacity: 0;
-    transform: scale(.4) translateY(-4px);
-    transition: opacity .35s ease .1s, transform .4s cubic-bezier(.34, 1.5, .5, 1) .1s;
-    pointer-events: none;
-  }
-  .nightstand.open .pill { opacity: 1; transform: scale(1) translateY(0); pointer-events: auto; }
-  .nightstand.open .pill:hover { transform: scale(1.1); }
-  .nightstand.taken .pill { opacity: 0; pointer-events: none; }
-  .nightstand .handle {
-    position: absolute;
-    left: 50%;
-    top: 58px;
-    width: 18px;
-    height: 4px;
-    margin: 0 0 0 -9px;
-    border-radius: 3px;
-    background: #f2dec2;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
-  }
-
-  .water {
-    position: absolute;
-    left: 52px;
-    top: 428px;
-    width: 26px;
-    height: 48px;
-    z-index: 5;
-    cursor: pointer;
-    transition: transform .3s ease;
-  }
-  .water:hover { transform: translateY(-2px); }
-  .water .glass {
-    position: absolute;
-    inset: 0;
-    border-radius: 3px 3px 9px 9px;
-    background: linear-gradient(180deg, rgba(255, 255, 255, .28), rgba(205, 232, 255, .42));
-    border: 1.5px solid rgba(255, 255, 255, .6);
-    box-shadow: inset 3px 0 6px rgba(255, 255, 255, .35);
-  }
-  .water .level {
-    position: absolute;
-    left: 3px;
-    right: 3px;
-    bottom: 4px;
-    height: 25px;
-    border-radius: 2px 2px 7px 7px;
-    background: linear-gradient(180deg, rgba(133, 202, 255, .72), rgba(72, 152, 232, .92));
-    transition: height .45s ease, opacity .45s ease;
-  }
-  .water.drank .level { height: 0; opacity: 0; }
-  .water .mark {
-    position: absolute;
-    left: 7px;
-    bottom: 7px;
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: #fff;
-    box-shadow: 0 0 0 1.5px rgba(120, 170, 220, .55);
-    opacity: 0;
-    transition: opacity .35s ease;
-  }
-  .water.pilled .mark { opacity: 1; }
-
   /* ===== 小米 11 ===== */
   .phone {
     position: absolute;
@@ -339,7 +264,8 @@
   .stage.view-hall .room,
   .stage.view-bath .room,
   .stage.view-wash .room,
-  .stage.view-dining .room { opacity: 0; filter: blur(8px); pointer-events: none; }
+  .stage.view-dining .room,
+  .stage.view-outside .room { opacity: 0; filter: blur(8px); pointer-events: none; }
 
   .scene {
     position: absolute;
@@ -763,3 +689,135 @@
   .scene-dining .btn.eat { display: none; }
   .scene-dining.sat .btn.eat { display: inline-block; }
 
+  /* ===== 屋外门口 ===== */
+  .scene-outside { background: linear-gradient(180deg, #232c52 0%, #46558c 55%, #8797bd 100%); }
+  .out-floor {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 190px;
+    background: linear-gradient(180deg, #5e735f, #43554a);
+    box-shadow: inset 0 8px 16px rgba(18, 28, 20, .28);
+  }
+  .out-window {
+    position: absolute;
+    left: 212px;
+    top: 148px;
+    width: 92px;
+    height: 116px;
+    border: 6px solid #f3ede3;
+    border-radius: 6px;
+    background: linear-gradient(180deg, #1d2748, #33406e);
+    z-index: 21;
+    overflow: hidden;
+    box-shadow: 0 8px 18px rgba(10, 16, 40, .28);
+  }
+  .out-window .ow-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 32% 72%, rgba(255, 214, 150, .38), transparent 62%);
+  }
+  .out-window .ow-moon {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #f6ead0;
+    box-shadow: 0 0 12px rgba(246, 234, 208, .7);
+  }
+  .out-window .ow-v, .out-window .ow-h { position: absolute; background: #f3ede3; }
+  .out-window .ow-v { left: 50%; top: 0; bottom: 0; width: 4px; }
+  .out-window .ow-h { top: 50%; left: 0; right: 0; height: 4px; }
+
+  .out-door {
+    position: absolute;
+    left: 58px;
+    top: 196px;
+    width: 104px;
+    height: 196px;
+    z-index: 22;
+    perspective: 520px;
+  }
+  .out-door .od-pane {
+    position: absolute;
+    inset: 4px;
+    border-radius: 6px 6px 0 0;
+    background: linear-gradient(160deg, #b17b4f, #744a2c);
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .14);
+    display: grid;
+    place-items: center;
+    transform-origin: left center;
+    transition: transform .75s cubic-bezier(.35, .05, .3, 1);
+  }
+  .out-door.open .od-pane { transform: rotateY(-76deg); }
+  .out-door .od-frame {
+    position: absolute;
+    inset: 0;
+    border: 5px solid #f3ede3;
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0 12px 22px rgba(10, 16, 40, .28);
+    pointer-events: none;
+  }
+  .out-door .od-tag { font-size: 12px; letter-spacing: .12em; color: #ffd8a4; }
+
+  .car {
+    position: absolute;
+    right: 30px;
+    top: 372px;
+    width: 150px;
+    height: 110px;
+    z-index: 23;
+  }
+  .car-emoji {
+    position: absolute;
+    inset: 0;
+    font-size: 108px;
+    line-height: 1;
+    text-align: center;
+  }
+  .car-door {
+    position: absolute;
+    left: 28px;
+    top: 24px;
+    width: 50px;
+    height: 50px;
+    border-radius: 10px 10px 4px 4px;
+    background: rgba(90, 120, 170, .85);
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .25);
+    transform-origin: left center;
+    transition: transform .6s cubic-bezier(.34, 1.2, .5, 1);
+  }
+  .car.door-open .car-door { transform: rotateY(-70deg); }
+  .car-lights i {
+    position: absolute;
+    top: 54px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #fff3c2;
+    opacity: .35;
+  }
+  .car-lights i:first-child { right: 16px; }
+  .car-lights i:last-child { left: 16px; }
+  .car.unlocked .car-lights i { animation: carBlink .5s ease-in-out 3; opacity: 1; }
+  @keyframes carBlink {
+    50% { background: #ffd84d; box-shadow: 0 0 12px #ffd84d; }
+  }
+
+  .scene-outside .walker { left: 118px; }
+  .walker.walk-from-door { animation: walkFromDoor .85s ease-in forwards; }
+  @keyframes walkFromDoor {
+    0%   { transform: translate(-70px, 0); opacity: 0; }
+    60%  { transform: translate(18px, -8px); opacity: 1; }
+    100% { transform: translate(0, 0); opacity: 1; }
+  }
+  .walker.walk-to-car { animation: walkToCar .75s ease-in forwards; }
+  @keyframes walkToCar {
+    0%   { transform: translate(0, 0); opacity: 1; }
+    60%  { transform: translate(96px, -8px); opacity: 1; }
+    100% { transform: translate(150px, 0); opacity: 0; }
+  }
+  .diner.goto-outside { animation: walkOut .85s ease-in forwards; }
