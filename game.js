@@ -49,6 +49,11 @@
   const diner = document.getElementById('diner');
   const sitDine = document.getElementById('sitDine');
   const eatBtn = document.getElementById('eatBtn');
+  const outsideScene = document.getElementById('outsideScene');
+  const outsideTitle = document.getElementById('outsideTitle');
+  const outDoor = document.getElementById('outDoor');
+  const car = document.getElementById('car');
+  const outWalker = document.getElementById('outWalker');
   const roomDoor = document.querySelector('.big-door.room-side');
   const tempInput = document.getElementById('tempInput');
   const tempEval = document.getElementById('tempEval');
@@ -71,7 +76,8 @@
     pillGone: false,
     poisoned: false,
     diningSat: false,
-    ate: false
+    ate: false,
+    inCar: false
   };
 
   /* ===== 舞台等比缩放（内部仍是 500×660 画布，外框按比例占位）===== */
@@ -90,7 +96,7 @@
   let currentView = 'room';
 
   function syncFocus() {
-    [hallScene, bathScene, washScene, diningScene].forEach(function (sc) {
+    [hallScene, bathScene, washScene, diningScene, outsideScene].forEach(function (sc) {
       const on = sc.classList.contains('active');
       sc.querySelectorAll('button, input').forEach(function (el) {
         el.setAttribute('tabindex', on ? '0' : '-1');
@@ -201,6 +207,7 @@
     walker.textContent = f;
     bather.textContent = state.relieved ? '😌' : f;
     diner.textContent = state.ate ? '😋' : f;
+    outWalker.textContent = f;
     if (f !== lastFace) {
       lastFace = f;
       bump();
@@ -345,14 +352,17 @@
     stage.classList.toggle('view-bath', name === 'bath');
     stage.classList.toggle('view-wash', name === 'wash');
     stage.classList.toggle('view-dining', name === 'dining');
+    stage.classList.toggle('view-outside', name === 'outside');
     hallScene.classList.toggle('active', name === 'hall');
     bathScene.classList.toggle('active', name === 'bath');
     washScene.classList.toggle('active', name === 'wash');
     diningScene.classList.toggle('active', name === 'dining');
+    outsideScene.classList.toggle('active', name === 'outside');
     hallScene.setAttribute('aria-hidden', String(name !== 'hall'));
     bathScene.setAttribute('aria-hidden', String(name !== 'bath'));
     washScene.setAttribute('aria-hidden', String(name !== 'wash'));
     diningScene.setAttribute('aria-hidden', String(name !== 'dining'));
+    outsideScene.setAttribute('aria-hidden', String(name !== 'outside'));
 
     if (name !== 'bath' && sitting) {
       stopSit();
@@ -361,6 +371,11 @@
     if (name !== 'hall') {
       bathDoor.classList.remove('open');
       roomDoor.classList.remove('open');
+    }
+    if (name !== 'outside') {
+      outDoor.classList.remove('open');
+      outWalker.classList.remove('walk-from-door', 'walk-in', 'walk-to-car');
+      outWalker.style.opacity = '';
     }
     if (name === 'hall' || name === 'room' || name === 'dining') {
       walker.classList.remove('walking');
@@ -441,6 +456,72 @@
     render();
     diningTitle.textContent = '吃饱了，真满足';
     showToast('一口下去，好满足');
+  });
+
+  // 餐厅：去门口（前提穿衣服）→ 走出餐厅，到屋外再开门出去、关门
+  bindAction(document.getElementById('toFrontDoor'), function () {
+    if (!state.worn) {
+      showToast('先穿上衣服，才能出去');
+      return;
+    }
+    clearTimeout(exitTimer);
+    diner.classList.add('goto-outside');
+    exitTimer = setTimeout(function () {
+      diner.classList.remove('goto-outside');
+      setScene('outside');
+      outDoor.classList.add('open');
+      outWalker.classList.add('walk-from-door');
+      exitTimer = setTimeout(function () {
+        outDoor.classList.remove('open');
+        outWalker.classList.remove('walk-from-door');
+      }, 900);
+    }, 850);
+  });
+
+  // 屋外：进车里（解锁 → 开门 → 人进去 → 关门）
+  bindAction(document.getElementById('enterCarBtn'), function () {
+    if (state.inCar) {
+      showToast('已经坐在车里了');
+      return;
+    }
+    clearTimeout(exitTimer);
+    car.classList.add('unlocked');
+    showToast('车辆已解锁');
+    exitTimer = setTimeout(function () { car.classList.add('door-open'); }, 550);
+    exitTimer = setTimeout(function () { outWalker.classList.add('walk-to-car'); }, 850);
+    exitTimer = setTimeout(function () {
+      outWalker.style.opacity = '0';
+      car.classList.remove('door-open');
+      car.classList.add('sealed');
+      state.inCar = true;
+      outsideTitle.textContent = '坐进车里了';
+      showToast('车门关上了');
+    }, 1600);
+  });
+
+  // 屋外：回去（在车里先下车，再开门走回屋里）
+  bindAction(document.getElementById('backHome'), function () {
+    clearTimeout(exitTimer);
+    var goHome = function () {
+      outDoor.classList.add('open');
+      outWalker.classList.add('walk-in');
+      exitTimer = setTimeout(function () {
+        outDoor.classList.remove('open');
+        setScene('dining');
+      }, 900);
+    };
+    if (state.inCar) {
+      car.classList.add('door-open');
+      exitTimer = setTimeout(function () {
+        outWalker.style.opacity = '';
+        outWalker.classList.remove('walk-to-car');
+        car.classList.remove('door-open', 'sealed', 'unlocked');
+        state.inCar = false;
+        goHome();
+      }, 800);
+    } else {
+      goHome();
+    }
   });
 
   // 走廊：进厕所（先开厕所门，再走进去）
@@ -732,6 +813,10 @@
     bowl.textContent = '🍜';
     diningTitle.textContent = '吃饭的地方';
     sitDine.textContent = '坐上去';
+    diner.classList.remove('goto-outside');
+    car.classList.remove('unlocked', 'door-open', 'sealed');
+    outWalker.style.opacity = '';
+    outsideTitle.textContent = '屋外门口';
     syncBathButtons();
     setScene('room');
     render();
