@@ -520,6 +520,25 @@
   }
   .stage.worn .worn-tag { opacity: 1; }
 
+  /* 背包（衣柜里） */
+  .backpack {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    margin-top: -17px;
+    width: 34px;
+    height: 34px;
+    font-size: 30px;
+    line-height: 1;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: opacity .5s ease, transform .5s ease, filter .3s ease;
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, .4));
+  }
+  .backpack:hover { filter: brightness(1.1) drop-shadow(0 3px 6px rgba(0, 0, 0, .4)); }
+  .stage.bag-on .backpack { opacity: .4; transform: scale(.9); }
+
   /* ===== 门 ===== */
   .door {
     position: absolute;
@@ -845,4 +864,106 @@
     0%   { transform: translateY(6px) scaleY(.7); opacity: 0; }
     25%  { opacity: 1; }
     100% { transform: translateY(-20px) scaleY(1.3); opacity: 0; }
+  }
+
+  /* ===== 遥控器 ===== */
+  .remote {
+    position: absolute;
+    right: 22px;
+    top: 350px;
+    width: 54px;
+    height: 146px;
+    z-index: 5;
+    padding: 8px 6px;
+    border-radius: 14px;
+    background: linear-gradient(160deg, #3b414e, #212630);
+    box-shadow: 0 10px 18px rgba(15, 25, 45, .3), inset 0 1px 0 rgba(255, 255, 255, .12);
+    transform: rotate(6deg);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    transition: transform .35s ease, box-shadow .5s ease;
+  }
+  .remote:hover { transform: rotate(6deg) translateY(-3px); }
+  .stage.ac-on .remote { box-shadow: 0 0 0 3px rgba(255, 158, 66, .25), 0 12px 24px rgba(255, 120, 30, .4); }
+
+  .remote .display {
+    width: 100%;
+    height: 22px;
+    border-radius: 6px;
+    background: #0b0f16;
+    color: #586374;
+    font-size: 9px;
+    letter-spacing: .04em;
+    display: grid;
+    place-items: center;
+    transition: color .5s ease, background .5s ease;
+  }
+  .stage.ac-on .remote .display {
+    color: #ffb066;
+    background: #140d08;
+    box-shadow: inset 0 0 10px rgba(255, 140, 50, .35);
+  }
+
+  .remote .ac {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #46505f;
+    color: #cfd8e5;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    display: grid;
+    place-items: center;
+    box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .25);
+    transition: background .5s ease, color .5s ease, box-shadow .5s ease;
+  }
+  .stage.ac-on .remote .ac {
+    background: radial-gradient(circle at 50% 35%, #ffc07a, #f4711d);
+    color: #351000;
+    box-shadow: 0 0 12px rgba(255, 130, 40, .8), inset 0 -2px 0 rgba(0, 0, 0, .2);
+  }
+
+  .remote .keys {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    width: 100%;
+  }
+  .remote .keys i {
+    height: 14px;
+    border-radius: 5px;
+    background: #525b6b;
+    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .25);
+  }
+
+  .remote .air {
+    position: absolute;
+    left: -48px;
+    top: 18px;
+    width: 46px;
+    height: 70px;
+    opacity: 0;
+    transition: opacity .45s ease;
+    pointer-events: none;
+  }
+  .stage.ac-on .remote .air { opacity: 1; }
+  .remote .air b {
+    position: absolute;
+    width: 34px;
+    height: 8px;
+    border-radius: 50%;
+    background: linear-gradient(90deg, rgba(255, 190, 120, 0), rgba(255, 186, 108, .9));
+    animation: blow 1.9s linear infinite;
+  }
+  .remote .air b:nth-child(1) { top: 0; }
+  .remote .air b:nth-child(2) { top: 25px; animation-delay: .5s; }
+  .remote .air b:nth-child(3) { top: 50px; animation-delay: 1s; }
+  @keyframes blow {
+    0%   { transform: translateX(22px); opacity: 0; }
+    25%  { opacity: 1; }
+    100% { transform: translateX(-30px); opacity: 0; }
   }

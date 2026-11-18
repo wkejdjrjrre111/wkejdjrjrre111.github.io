@@ -43,6 +43,7 @@
             <span class="sl sl-l"></span>
             <span class="sl sl-r"></span>
           </div>
+          <div class="backpack" id="backpack" role="button" tabindex="0" aria-label="点一下背包，背上它">🎒</div>
           <span class="worn-tag">已穿上</span>
         </div>
         <div class="d-l"></div>
@@ -275,6 +276,17 @@
     <audio id="carAudio" src="assets/heijie.ogg" preload="none" loop></audio>
     <button class="reset-btn" id="resetBtn" type="button">重新开始</button>
     <div class="hold-pill" id="holdPill" aria-hidden="true">还能憋 60 秒</div>
+
+    <button class="bag-badge" id="bagBadge" type="button" aria-label="查看背包">🎒</button>
+    <div class="bag-panel" id="bagPanel" aria-hidden="true">
+      <div class="bag-card" role="dialog" aria-label="背包">
+        <div class="bag-head">
+          <span>🎒 背包</span>
+          <button class="bag-x" id="bagClose" type="button" aria-label="关闭背包">✕</button>
+        </div>
+        <div class="bag-list" id="bagList"></div>
+      </div>
+    </div>
   </div>
   </div>
 

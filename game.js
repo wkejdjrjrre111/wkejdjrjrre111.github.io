@@ -19,6 +19,11 @@
   const switchEl = document.getElementById('switch');
   const wardrobe = document.getElementById('wardrobe');
   const sweater = document.getElementById('sweater');
+  const backpack = document.getElementById('backpack');
+  const bagBadge = document.getElementById('bagBadge');
+  const bagPanel = document.getElementById('bagPanel');
+  const bagList = document.getElementById('bagList');
+  const bagClose = document.getElementById('bagClose');
   const toast = document.getElementById('toast');
   const outBtn = document.getElementById('outBtn');
   const water = document.getElementById('water');
@@ -103,7 +108,10 @@
     inStore: false,
     radioOn: false,
     boughtBread: false,
-    boughtCookie: false
+    boughtCookie: false,
+    bagWorn: false,
+    bagBread: false,
+    bagCookie: false
   };
 
   /* ===== 舞台等比缩放（内部仍是 500×660 画布，外框按比例占位）===== */
@@ -130,6 +138,13 @@
     });
     outBtn.setAttribute('tabindex', (currentView === 'room' && state.doorOpen) ? '0' : '-1');
     sweater.setAttribute('tabindex', state.wardrobeOpen ? '0' : '-1');
+    backpack.setAttribute('tabindex', state.wardrobeOpen ? '0' : '-1');
+    bagBadge.setAttribute('tabindex', state.bagWorn ? '0' : '-1');
+    var panelOpen = bagPanel.classList.contains('open');
+    bagClose.setAttribute('tabindex', panelOpen ? '0' : '-1');
+    bagList.querySelectorAll('.bag-eat').forEach(function (el) {
+      el.setAttribute('tabindex', panelOpen ? '0' : '-1');
+    });
   }
 
   const SNOW_DOTS = [
@@ -252,6 +267,7 @@
     stage.classList.toggle('wardrobe-open', state.wardrobeOpen);
     stage.classList.toggle('door-open', state.doorOpen);
     stage.classList.toggle('dark', state.lightsOff);
+    stage.classList.toggle('bag-on', state.bagWorn);
     snow.classList.toggle('hide', warm);
     water.classList.toggle('drank', state.drank);
     water.classList.toggle('pilled', state.pill);
@@ -268,6 +284,7 @@
     if (state.boughtBread) bag.push('🍞');
     if (state.boughtCookie) bag.push('🍪');
     storeBagItems.textContent = bag.length ? bag.join(' ') : '空空如也';
+    renderBag();
 
     syncFaces();
     setText(title, pickTitle());
@@ -343,6 +360,86 @@
     render();
   });
 
+  /* ===== 背包 ===== */
+  function bagItems() {
+    var arr = [];
+    if (state.bagBread) arr.push({ key: 'bread', emoji: '🍞', name: '奶油面包' });
+    if (state.bagCookie) arr.push({ key: 'cookie', emoji: '🍪', name: '压缩饼干' });
+    return arr;
+  }
+
+  function renderBag() {
+    var items = bagItems();
+    bagList.innerHTML = '';
+    if (!items.length) {
+      var empty = document.createElement('div');
+      empty.className = 'bag-empty';
+      empty.textContent = '背包空空如也';
+      bagList.appendChild(empty);
+    } else {
+      items.forEach(function (it) {
+        var row = document.createElement('div');
+        row.className = 'bag-row';
+        var em = document.createElement('span');
+        em.className = 'br-emoji';
+        em.textContent = it.emoji;
+        var nm = document.createElement('span');
+        nm.className = 'br-name';
+        nm.textContent = it.name;
+        var btn = document.createElement('button');
+        btn.className = 'bag-eat';
+        btn.type = 'button';
+        btn.textContent = '吃';
+        btn.setAttribute('data-key', it.key);
+        row.appendChild(em);
+        row.appendChild(nm);
+        row.appendChild(btn);
+        bagList.appendChild(row);
+      });
+    }
+    syncFocus();
+  }
+
+  function openBag(open) {
+    bagPanel.classList.toggle('open', open);
+    bagPanel.setAttribute('aria-hidden', String(!open));
+    renderBag();
+  }
+
+  function eatBagItem(key) {
+    if (key === 'bread' && state.bagBread) {
+      state.bagBread = false;
+      showToast('吃掉了奶油面包 🍞');
+    } else if (key === 'cookie' && state.bagCookie) {
+      state.bagCookie = false;
+      showToast('吃掉了压缩饼干 🍪');
+    } else { return; }
+    bump();
+    render();
+  }
+
+  bagList.addEventListener('click', function (e) {
+    var btn = e.target.closest ? e.target.closest('.bag-eat') : null;
+    if (!btn) return;
+    eatBagItem(btn.getAttribute('data-key'));
+  });
+
+  // 衣柜里的背包：背上 / 放下
+  bindAction(backpack, function () {
+    state.bagWorn = !state.bagWorn;
+    if (!state.bagWorn) openBag(false);
+    render();
+    showToast(state.bagWorn ? '背上背包了 🎒' : '放下了背包');
+  });
+
+  bindAction(bagBadge, function () {
+    openBag(!bagPanel.classList.contains('open'));
+  });
+
+  bindAction(bagClose, function () {
+    openBag(false);
+  });
+
   // 关灯前先检查前提
   function needBedFirst() {
     if (canLightOff()) return false;
@@ -383,6 +480,7 @@
 
   function setScene(name) {
     currentView = name;
+    openBag(false);
     stage.classList.toggle('view-hall', name === 'hall');
     stage.classList.toggle('view-bath', name === 'bath');
     stage.classList.toggle('view-wash', name === 'wash');
@@ -745,14 +843,16 @@
   bindAction(buyBread, function () {
     if (state.boughtBread) { showToast('奶油面包已经买过了'); return; }
     state.boughtBread = true;
+    state.bagBread = true;
     render();
-    showToast('买到奶油面包 🍞');
+    showToast('买到奶油面包 🍞，已放进背包');
   });
   bindAction(buyCookie, function () {
     if (state.boughtCookie) { showToast('压缩饼干已经买过了'); return; }
     state.boughtCookie = true;
+    state.bagCookie = true;
     render();
-    showToast('买到压缩饼干 🍪');
+    showToast('买到压缩饼干 🍪，已放进背包');
   });
 
   // 走廊：进厕所（先开厕所门，再走进去）
@@ -1056,6 +1156,7 @@
     storeBagItems.textContent = '';
     buyBread.textContent = '购买';
     buyCookie.textContent = '购买';
+    openBag(false);
     syncBathButtons();
     setScene('room');
     render();
